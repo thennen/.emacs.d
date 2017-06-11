@@ -38,13 +38,13 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
-      auto-completion
-      better-defaults
+     auto-completion
+     better-defaults
      emacs-lisp
      git
      markdown
      org
-     common-lisp
+     ;;common-lisp
      journal
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -65,6 +65,8 @@ values."
                                       interleave
                                       ob-ipython
                                       zotxt
+                                      key-chord ;; for hh escape binding
+                                      smooth-scrolling ;; try to fix jumpy scrolling
                                       (emacs-ereader :location (recipe :fetcher github :repo "bddean/emacs-ereader"))
                                       (scimax-org-babel-ipython :location (recipe :fetcher github :repo "jkitchin/scimax") :files ("scimax-org-babel-ipython.el"))
                                       real-auto-save
@@ -309,6 +311,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;I can never find user-config in this huge file, so here's an obnoxious marker ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -316,6 +322,31 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  (define-key evil-normal-state-map "l" 'evil-substitute)
+  (define-key evil-normal-state-map "s" 'evil-forward-char)
+
+  ;; try to make scrolling suck less.  Don't know if it worked
+  (setq scroll-margin 5
+        scroll-conservatively 9999
+        scroll-step 1)
+
+  ;;(setq evil-escape-key-sequence "ht")
+  (require 'key-chord)
+  (setq key-chord-two-keys-delay 0.5)
+  (key-chord-define evil-insert-state-map "hh" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "uu" 'undo-tree-undo)
+  (key-chord-mode 1)
+
+  (defun show-file-name ()
+    "Show the full path file name in the minibuffer."
+    (interactive)
+    (message (buffer-file-name))
+    (kill-new (file-truename buffer-file-name))
+    )
+
+  (global-set-key "\C-cz" 'show-file-name)
+
   (smartparens-global-mode t) ; use smartpares in all types of buffers, even in org-mode
   (global-prettify-symbols-mode +1) ; 
   ;; (dotspacemacs-line-numbers t) ; might cause an error,0use setting above instead
@@ -407,12 +438,13 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol nil)
  '(org-agenda-files
    (quote
     ("~/Documents/journal/notes.org" "c:/Users/dbeda7152005/Documents/software/emacs/org-mode/test1.org")))
  '(package-selected-packages
    (quote
-    (evil-smartparens excorporate url-http-ntlm soap-client fsm ntlm real-auto-save zotxt request-deferred deferred org-journal ob-ipython dash-functional diminish avy packed smartparens highlight evil helm helm-core projectile hydra f latex-math-preview interleave pdf-tools tablist recentf-ext jump-char iy-go-to-char buffer-move better-shell smeargle slime-company slime orgit org-projectile org-present org org-pomodoro alert log4e gntp org-download mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor common-lisp-snippets mwim helm-company helm-c-yasnippet company-statistics company-anaconda company auto-yasnippet yasnippet ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spacemacs-theme spaceline restart-emacs request rainbow-delimiters quelpa popwin persp-mode pcre2el paradox org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu elisp-slime-nav dumb-jump define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
+    (key-chord xpm unfill fuzzy evil-smartparens excorporate url-http-ntlm soap-client fsm ntlm real-auto-save zotxt request-deferred deferred org-journal ob-ipython dash-functional diminish avy packed smartparens highlight evil helm helm-core projectile hydra f latex-math-preview interleave pdf-tools tablist recentf-ext jump-char iy-go-to-char buffer-move better-shell smeargle slime-company slime orgit org-projectile org-present org org-pomodoro alert log4e gntp org-download mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md evil-magit magit magit-popup git-commit with-editor common-lisp-snippets mwim helm-company helm-c-yasnippet company-statistics company-anaconda company auto-yasnippet yasnippet ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spacemacs-theme spaceline restart-emacs request rainbow-delimiters quelpa popwin persp-mode pcre2el paradox org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu elisp-slime-nav dumb-jump define-word column-enforce-mode clean-aindent-mode auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
